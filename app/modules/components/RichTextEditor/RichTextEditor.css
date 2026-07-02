@@ -1,0 +1,63 @@
+.eraj-editor{
+  background-color: white;
+  padding: 0 110px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  height: fit-content;
+  box-sizing: border-box;
+}
+.eraj-editor_h1{
+  margin: 0 auto;
+  margin-bottom: 30px;
+  position: relative;
+  font-size: 2rem;
+  text-align: center;
+  background: -webkit-linear-gradient(right, #00fc37, #ea3001, #56e475, #9f01ea);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.modal{
+  position: absolute;
+  top: 4rem;
+  left: 25%;
+  z-index: 5;
+  max-width: 70rem;
+  background-color: rgb(214, 241, 203);
+  padding: 5px 10px 3px 10px ;
+  border-radius: 10px;
+}
+.button-div{
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.button_meta{
+  position: relative;
+  background-color: aquamarine;
+  color: white;
+  font-size: 1.4rem;
+  padding: .5px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.button_meta_conf:hover{
+  color: greenyellow;
+  background-color: rgb(106, 153, 155);
+}
+.button_meta_can:hover{
+  color: rgb(231, 75, 75);
+  background-color: rgb(224, 158, 72);
+}
+.dim{
+   pointer-events: none;
+  opacity: 0.6;
+  filter: grayscale(0.2);
+  user-select: none;
+}
+.download, .view{
+  /* position: absolute;
+  bottom: 30px; */
+}

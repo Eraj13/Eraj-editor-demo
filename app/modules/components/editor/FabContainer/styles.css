@@ -1,0 +1,148 @@
+.fab-wrapper{
+  display: block;
+  width: 60px;
+  height: 40px;
+  align-self: center;
+}
+._right{
+  position: absolute;
+  top: -3px;
+  right: -30px;
+}
+.fab-container {
+  width: 40px;
+  display: flex;
+  flex-direction: row;
+  z-index: 3;
+  /* margin-top: .9rem; */
+  /* height: 25%; I CHANGED BECAUSE OF HOVER UL V  */
+}
+
+.fab-main {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: white;
+  border: rgb(56, 56, 56) 1px solid;
+  color: rgb(24, 23, 23);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* transition: transform 0.3s ease; */
+  font-size: 24px;
+  /* margin-right: .5rem; */
+  margin: 0 5px;
+  padding: 8px 16px;
+}
+.fab-main:hover{
+   background: white;
+}
+/*  .fab-main.active */
+.fab-container.active .fab-main {
+  transition: transform 0.3s ease;
+  transform: rotate(45deg);
+ }
+.fab-options {           
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+}
+
+.fab-container.active .fab-options {
+  opacity: 1;
+  visibility: visible;
+}
+.fab-hidden {
+opacity: 0;
+pointer-events: none;
+width: 44px;
+display: flex;
+flex-direction: row;
+z-index: 3;
+margin: 20px;
+margin-top: 9px;
+height: 50%;
+}
+.fab-option {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: white;
+  border: none;
+  color: black;
+  /* border: rgb(56, 56, 56) 1px solid; */
+  border: rgb(211, 245, 160) 1px solid;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.2s ease;
+}
+.fab-option:hover{
+  background-color: rgb(200, 250, 124);
+  border: rgb(211, 245, 160) 1px solid;
+}
+.fab-container.active .fab-option {
+  opacity: 1;
+  transform: translateY(0);
+}
+.fab-option:nth-child(1) { transition-delay: 0.05s; }
+.fab-option:nth-child(2) { transition-delay: 0.1s; }
+.fab-option:nth-child(3) { transition-delay: 0.15s; }
+
+.fab-icon {
+  font-size: 18px;
+}
+
+.fab-container {
+  position: absolute;
+  width: 50px;
+  transition: top 0.2s ease-out;
+}
+
+.list-add-wrapper {
+  /* display: grid;
+  grid-template-columns: 30px 1fr; */
+  /* align-items: center; */
+  position: relative;
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+}
+.sub-button {
+  margin-left: 10px;
+  margin-top: 1.5px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: white;
+  border: 1.5px solid #4bb5fc;
+  color: #4a5568;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.2s ease;
+  z-index: 10;
+  pointer-events: none; 
+  &:hover{
+    background-color: #4bb5fc;
+    color: rgb(200, 250, 124);
+  }
+}
+.sub-button.rtl{
+  margin-left: 0;
+  margin-right: 10px;
+}
+/* Show on hover */
+.list-add-wrapper:hover .sub-button {
+  opacity: 1;
+  pointer-events: auto; 
+}
