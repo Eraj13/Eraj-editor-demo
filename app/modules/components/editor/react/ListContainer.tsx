@@ -47,8 +47,6 @@ export const ListContainer: React.FC<ListContainerProps> = ({
       
       {/* The list itself */}
       <ul className='list-container'
-      //  className={`list-container 
-        // ${onPreferences?.languageDirection === 'rtl' ? "reverse" : ""} ${listNode.listDirection}`}
       style={{direction: onPreferences?.languageDirection,
         flexDirection: listNode.listDirection
       }}

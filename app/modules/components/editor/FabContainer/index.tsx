@@ -3,12 +3,12 @@ import React, { useMemo, useRef,  } from 'react';
 import './styles.css';
 import { fabContainerProps, EditorNodeTag, MediaItem  } from '../core/types';
 import { addNode,  slugifyFilename } from '../utils/utils';
+import { BulletListIcon, ColumnListIcon, RowListIcon } from '../utils/constants';
 
-export const FabContainer = ({onisOpen, onsetIsOpen, onapply,onActiveNode, onNodeId, newnode, lnd}: fabContainerProps) => {
+export const FabContainer = ({mode ,onisOpen, onsetIsOpen, onapply,onActiveNode, onNodeId, newnode, lnd}: fabContainerProps) => {
   
   const fabRef = React.useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  // const [visibilitys, setVisibilitys] = useState<'visible' | 'hidden'>("hidden");
 
   // ✅ useMemo — computes value during render, no extra re-render
 const visibilities = useMemo(() => {
@@ -50,11 +50,12 @@ const visibilities = useMemo(() => {
     // setVisibilitys("hidden");
   };
   
-  const addNodeh = function (type: EditorNodeTag, listDirection?: "column" | "row" ) {
+  const addNewNode = function (type: EditorNodeTag, listDirection?: "column" | "row" ) {
     // onAdd(type, listDirection);
     addNode(type, onapply, onNodeId, listDirection);
     // setVisibilitys("hidden");
     onsetIsOpen(false);  
+    
   }
   
   return (
@@ -80,14 +81,14 @@ const visibilities = useMemo(() => {
             <button 
               className="fab-option" 
               aria-label="Add H1"
-              onClick={() => addNodeh("h1")}
+              onClick={() => addNewNode("h1")}
             >
               H1
             </button>
             <button 
               className={`sub-button ${lnd === "rtl" && "rtl"}`}
               aria-label="Add H2"
-              onClick={() => addNodeh("h2")}
+              onClick={() => addNewNode("h2")}
               >
                 H2
             </button>        
@@ -119,14 +120,14 @@ const visibilities = useMemo(() => {
           <button 
             className="fab-option" 
             aria-label="Add paragrpah"
-            onClick={() => addNodeh("p")}
+            onClick={() => addNewNode("p")}
           >
             P
           </button>
           <button 
             className={`sub-button ${lnd === "rtl" && "rtl"}`} 
             aria-label="Add paragrpah"
-            onClick={() => addNodeh("blockquote")}
+            onClick={() => addNewNode("blockquote")}
           >
             Q
           </button>
@@ -136,21 +137,21 @@ const visibilities = useMemo(() => {
             className="fab-option fab-option_ul" 
             aria-label="Add unordered list"
           >
-            UL
+            {BulletListIcon({size:20})}
           </button>
           <button 
             className={`sub-button ${lnd === "rtl" && "rtl"}`}            
-              onClick={() => addNodeh("ul",'row')}
+              onClick={() => addNewNode("ul",'row')}
               aria-label="Add list item"
             >
-              <span className="plus-icon">↳</span>
+              <span className="plus-icon">{RowListIcon({size:20})}</span>
           </button>
           <button 
             className={`sub-button ${lnd === "rtl" && "rtl"}`}            
-              onClick={() => addNodeh("ul",'column')}
+              onClick={() => addNewNode("ul",'column')}
               aria-label="Add list item"
             >
-              <span className="plus-icon">↳</span>
+              <span className="plus-icon">{ColumnListIcon({size:20})}</span>
           </button>
           </div>
         </div>

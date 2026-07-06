@@ -6,6 +6,8 @@ import { parseInlineHtmlToTextLeaves } from '../utils/Convert';
 import { FabContainer } from '../FabContainer';
 import './styles.css';
 import { blurUpdate, slugifyFilename } from '../utils/utils';
+import { getImageFromIndexedDB } from '../utils/indexDB';
+import { DeleteIcon, PLACEHOLDER_IMAGE } from '../utils/constants';
 
 
 const ZWSP = '\u200B';
@@ -35,7 +37,8 @@ export const ContentNode = React.memo(function ContentNode({
   const nodeRef = React.useRef<HTMLDivElement | HTMLQuoteElement | HTMLElement>(null);
   const [activeNode, setActiveNode] = useState<string| null>(null);
   const [isOpen, setIsOpen] = useState(false);
-  
+  const [imageSrc, setImageSrc] = useState('');
+  const [loadingImg, setLoadingImg] = useState(true);
   const handleChildFocus = () => {
     if (!nodeRef.current) return;
     // const rect = nodeRef.current.getBoundingClientRect();
@@ -102,6 +105,7 @@ export const ContentNode = React.memo(function ContentNode({
             tag: 'image',
             children: [],
             imageMeta: {
+              mediaId: node.imageMeta?.mediaId,
               src: dataUrl,
               filename: slugifyFilename(file.name),
               mediaItem         
@@ -200,7 +204,19 @@ export const ContentNode = React.memo(function ContentNode({
     // REMOVE listener when component unmounts
     return () => window.removeEventListener('beforeunload', saveDraft);
   }, [onapply, node.tag, node.id, onMeta_test]);
-
+  
+  useEffect(() => {
+  if (node.tag === "image" && node.imageMeta?.mediaId && node.imageMeta.filename) {
+    setLoadingImg(true);
+    getImageFromIndexedDB(node.imageMeta.mediaId).then((image) => {
+      if (image) {
+        setImageSrc(`${image.base64}`);
+      }
+    });
+    setLoadingImg(false);
+  }
+  }, [node.tag, node.imageMeta?.mediaId, node.imageMeta?.filename]);
+      
 // Also save on beforeunload (as shown above) 
   switch (node.tag) {
     case 'p':
@@ -235,13 +251,40 @@ export const ContentNode = React.memo(function ContentNode({
       );
       break;
     case 'image':
+       // ✅ Show loading state
+    if (loadingImg) {
+      return (
+        <figure className="image-container loading">
+          <div className="image-placeholder-loading">
+            <div className="spinner"></div>
+            <span>Loading image...</span>
+          </div>
+          <figcaption className="image-caption">
+            {node.imageMeta?.filename || 'Uploading...'}
+          </figcaption>
+        </figure>
+      );
+    }
+    
+      // ✅ Show error state
+      // if (error) {
+      //   return (
+      //     <figure className="image-container error">
+      //       <div className="image-placeholder-error">
+      //         <span>❌</span>
+      //         <span>Failed to load image</span>
+      //       </div>
+      //     </figure>
+      //   );
+      // }
+    
       output = (
         <figure className={`image-container ${onMeta_test ? "onMeta_test" : ''}` } tabIndex={0}
         >
          <div className="image-overlay"
           onClick={handleImageClick}>
         🖼️ Change</div>
-          <img src={node?.imageMeta?.src || "/bear.jpg"} alt={node.imageMeta?.alt || "Picture"} 
+          <img src={imageSrc || PLACEHOLDER_IMAGE} alt={node.imageMeta?.alt || "Picture"} 
            className='image'
           >
           </img>
@@ -278,10 +321,12 @@ export const ContentNode = React.memo(function ContentNode({
       <br></br>     
   }
   return (  
-    <div onBlur={(e) => handleBlur(e)}  className={`node-block`}
+    <div onBlur={(e) => handleBlur(e)}  className={`node-block ${onPreferences?.languageDirection}`}
       style={{direction: node.tag === "image" ? 'ltr': onPreferences?.languageDirection}}>
       {!onMeta_test && 
-      <FabContainer onisOpen={isOpen} onsetIsOpen={setIsOpen} 
+      <FabContainer 
+      mode={"NORMAL"}
+      onisOpen={isOpen} onsetIsOpen={setIsOpen} 
       onapply={onapply}
       onActiveNode={activeNode} onNodeId={node.id} 
       lnd={onPreferences?.languageDirection}
@@ -292,8 +337,10 @@ export const ContentNode = React.memo(function ContentNode({
         {output}
       </div>
        {(!onMeta_test || node.tag === "li" ) &&
-        <button className={`delete-div ${node.tag === "li" ? "list" :''}
-        ${activeNode === node.id ? '' : 'disappear'} `} onClick={() => onDelete(node.id, node.parentId, node.tag,)}>X</button>
+        <button className={`delete-btn ${node.tag === "li" ? "list" :''}
+        ${activeNode === node.id ? '' : 'disappear'} `} onClick={() => onDelete(node.id, node.parentId, node.tag, node.imageMeta?.mediaId)}>
+          {DeleteIcon({className: onPreferences?.languageDirection})}
+        </button>
        }
     </div>
   );

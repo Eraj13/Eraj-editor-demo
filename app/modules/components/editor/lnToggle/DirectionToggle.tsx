@@ -1,55 +1,52 @@
 // DirectionToggle.tsx
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import './DirectionToggle.css';
+import { positionClasses } from '../utils/constants';
+import { DirectionToggleProps } from '../core/types';
 
-interface DirectionToggleProps {
-  initialDirection?: 'ltr' | 'rtl';
-  onToggle?: (direction: 'ltr' | 'rtl') => void;
-  position?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
-}
+
+// const DirectionToggle: React.FC<DirectionToggleProps> = ({
+//   initialDirection = 'ltr',
+//   onToggle,
+//   position = 'top-right'
+// }) => {
 
 const DirectionToggle: React.FC<DirectionToggleProps> = ({
-  initialDirection = 'ltr',
   onToggle,
-  position = 'top-right'
+  position = 'top-right',
+  onAnimation,
+  onDirection
 }) => {
-  const [direction, setDirection] = useState<'ltr' | 'rtl'>(initialDirection);
-  const [isAnimating, setIsAnimating] = useState(false);
+  // const [direction, setDirection] = useState<'ltr' | 'rtl'>(initialDirection);
+  // const [onAnimation, setIsAnimating] = useState(false);
   
-  const handleToggle = () => {
-    if (isAnimating) return;
+  // const handleToggle = () => {
+  //   if (onAnimation) return;
     
-    setIsAnimating(true);
-    const newDirection = direction === 'ltr' ? 'rtl' : 'ltr';
+  //   setIsAnimating(true);
+  //   const newDirection = direction === 'ltr' ? 'rtl' : 'ltr';
     
-    // Trigger animation
-    setTimeout(() => {
-      setDirection(newDirection);
-      onToggle?.(newDirection);
-    }, 150);
+  //   // Trigger animation
+  //   setTimeout(() => {
+  //     setDirection(newDirection);
+  //     onToggle?.(newDirection);
+  //   }, 150);
     
-    // Reset animation state
-    setTimeout(() => setIsAnimating(false), 300);
-  };
+  //   // Reset animation state
+  //   setTimeout(() => setIsAnimating(false), 300);
+  // };
   
-  // Get position classes
-  const positionClasses = {
-    'top-right': 'dir-toggle-top-right',
-    'top-left': 'dir-toggle-top-left',
-    'bottom-right': 'dir-toggle-bottom-right',
-    'bottom-left': 'dir-toggle-bottom-left'
-  };
   
   return (
     <button
       className={`direction-toggle ${positionClasses[position]} ${
-        direction === 'rtl' ? 'rtl-active' : 'ltr-active'
-      } ${isAnimating ? 'animating' : ''}`}
-      onClick={handleToggle}
-      title={direction === 'ltr' ? 'Switch to Arabic (RTL)' : 'Switch to English (LTR)'}
-      aria-label={`Switch to ${direction === 'ltr' ? 'Arabic' : 'English'}`}
+        onDirection === 'rtl' ? 'rtl-active' : 'ltr-active'
+      } ${onAnimation ? 'animating' : ''}`}
+      onClick={onToggle}
+      title={onDirection === 'ltr' ? 'Switch to Farsi (RTL)' : 'Switch to English (LTR)'}
+      aria-label={`Switch to ${onDirection === 'ltr' ? 'Arabic' : 'English'}`}
       type="button"
     >
       <div className="toggle-content">
@@ -64,7 +61,7 @@ const DirectionToggle: React.FC<DirectionToggleProps> = ({
       
       {/* Tooltip */}
       {/* <div className="toggle-tooltip">
-        {direction === 'ltr' ? 'Switch to فارسی' : 'Switch to English'}
+        {onDirection === 'ltr' ? 'Switch to فارسی' : 'Switch to English'}
       </div> */}
     </button>
   );

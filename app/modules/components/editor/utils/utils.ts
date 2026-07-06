@@ -1,4 +1,6 @@
-import { blurUpdate_Prop, DEFAULT_PREFERENCES, EditorNode, EditorNodeTag, EditorState, NodeAction, TextLeaf } from '../core/types';
+import { blurUpdate_Prop, DEFAULT_PREFERENCES, EditorNode, EditorNodeTag, EditorState, NodeAction, TextLeaf, EditorPreferences } from '../core/types';
+import { STORAGE_KEY } from './constants';
+import { saveImageToIndexedDB } from './indexDB';
 
 export const generateId = () => Math.random().toString(36).slice(2, 11);
 
@@ -31,7 +33,7 @@ export function loadInitialState(defaultValue?: EditorState, meta_test?: boolean
       const parsed = JSON.parse(saved);
         return ({
           editorNodes: parsed.editorNodes,
-          preferences: DEFAULT_PREFERENCES,
+          preferences: parsed.preferences,
           nodeMetadata: parsed.nodeMetadata,
         });
   } else {
@@ -205,31 +207,36 @@ export const placeHolder_re = (tag: EditorNodeTag, lng?: "ltr" | "rtl"  ) => {
     if(tag === "image") return "Type caption"
 }
 
-export const addNode = (type: EditorNodeTag, onapply: ((action: NodeAction) => void), nodeId: string | undefined, listDirection?: "column" | "row", imageMeta?: {
+export const addNode = (type: EditorNodeTag, onapply: ((action: NodeAction) => void), nodeId?: string, listDirection?: "column" | "row", imageMeta?: {
     src: string;
     filename: string;
   }) => {
     if(type !== "ul" && type !== "li" && type !== "ol") { 
+      const imageId = generateId();
+      addImageNode(imageId, imageMeta?.src)
       onapply({
-            type: 'ADD_NODE',
-            tagType: type,
-            nodeId,
-            imageMeta: imageMeta
+        type: 'ADD_NODE',
+        tagType: type,
+        nodeId,
+        imageMeta: {...imageMeta,mediaId: imageId, src: `imageId-${imageId}`}
       });
+      requestAnimationFrame(() => {
+      const element= document.querySelector(`[data_node_id="${nodeId}"]`) as HTMLElement;
+      element.scrollIntoView({behavior: 'smooth', block: 'end'})
+      })
     }
     else {
       onapply({
             type: 'ADD_LIST',
+            nodeId: nodeId,
             listType: type,
             listDirection: listDirection
       })
     }
     if(nodeId) requestAnimationFrame(() => {
-      const element= document.querySelector(`[data_node_id="${nodeId}"]`) as HTMLElement;;
-      
+      const element= document.querySelector(`[data_node_id="${nodeId}"]`) as HTMLElement;
       if (element) {
         element.focus(); 
-        // Place cursor at the end
         const range = document.createRange();
         const selection = window.getSelection();
         range.selectNodeContents(element);
@@ -239,6 +246,11 @@ export const addNode = (type: EditorNodeTag, onapply: ((action: NodeAction) => v
       }
     })
   }; 
+
+  // ✅ Async logic outside reducer
+const addImageNode = async (imageId: string, src?: string ) => {
+  await saveImageToIndexedDB(imageId, src);
+};
 
 // utils/downloadJSON.ts
 export const downloadJSON = (data: EditorState, filename: string = 'article.json') => {
@@ -255,5 +267,7 @@ export const downloadJSON = (data: EditorState, filename: string = 'article.json
   URL.revokeObjectURL(url);
 };
 
+export const saveToLocal = (newState: EditorState) => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(newState, null, 2));
+} 
 
-export const STORAGE_KEY = 'editor-draft';

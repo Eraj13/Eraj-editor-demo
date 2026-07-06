@@ -1,16 +1,9 @@
-@import "tailwindcss";
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
 
 @media (prefers-color-scheme: dark) {
   :root {
@@ -33,7 +26,6 @@ html{
   margin: 0;
 }
 body {
-  /* color: var(--foreground); */
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
   padding: 0;
@@ -41,3 +33,70 @@ body {
   box-sizing: border-box;
   width: 100%;
 }
+
+/* src/styles/index.css */
+
+/* ✅ Import Vazirmatn from CDN */
+@import url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/fonts/webfonts/Vazirmatn-Regular.woff2');
+/* Or use Google Fonts for easier access */
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;700;900&display=swap');
+
+/* ✅ Apply font for RTL */
+[dir="rtl"] {
+  font-family: 'Vazirmatn', 'IRANSans', 'Vazir', Tahoma, sans-serif;
+  font-size: 0.95em;
+  letter-spacing: 0.3px;
+}
+
+/* ✅ Apply font for specific elements */
+[dir="rtl"] .content-node {
+  font-family: inherit;
+}
+
+/* ✅ Optional: Improve Persian text rendering */
+[dir="rtl"] .content-node {
+  font-feature-settings: "ss01" on; /* Persian digits */
+  word-spacing: 0.5px;
+}
+/* src/styles/index.css */
+
+/* ✅ Multiple CDN sources for reliability */
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;700;900&display=swap');
+
+/* ✅ Fallback if Google Fonts is blocked */
+@import url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/fonts/webfonts/Vazirmatn-Regular.woff2');
+
+[dir="rtl"] {
+  /* ✅ Multiple fallbacks in order */
+  font-family: 'Vazirmatn', 'IRANSans', 'Vazir', 'Shabnam', Tahoma, 'Segoe UI', sans-serif;
+}
+/* src/styles/index.css */
+
+/* ✅ For offline use, add a local fallback */
+@font-face {
+  font-family: 'Vazirmatn';
+  src: local('Vazirmatn'), local('IRANSans'), local('Vazir');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ✅ CDN as primary, local as fallback */
+[dir="rtl"] {
+  font-family: 'Vazirmatn', 'IRANSans', 'Vazir', Tahoma, sans-serif;
+}
+/* src/styles/index.css */
+
+/* ✅ CSS variable for custom font */
+:root {
+  --editor-rtl-font: 'Vazirmatn', 'IRANSans', 'Vazir', Tahoma, sans-serif;
+}
+
+[dir="rtl"] {
+  font-family: var(--editor-rtl-font);
+}
+
+/* ✅ Consumer can override */
+/* .your-app {
+  --editor-rtl-font: 'MyCustomFont', Tahoma, sans-serif;
+} */

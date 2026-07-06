@@ -225,18 +225,6 @@ useEffect(() => {
     }
   };
 
-  const handleDirectionToggle = (newDirection: 'ltr' | 'rtl') => {
-    settypeDirection(newDirection);
-    apply({
-      type: "CHANGE_LANGUAGE",
-      direction: newDirection
-    })
-    const firstNode = state?.editorNodes?.[0];
-    const element = document.querySelector(`[data_node_id="${firstNode?.id}"]`);
-    // if(state.editorNodes.length < 2 && firstNode?.tag === "h1" && firstNode?.children.length === 0 && element) {
-    (element as HTMLElement).focus();
-    
-  };
 
   
   // Focus on newest added node. 
@@ -335,6 +323,32 @@ useEffect(() => {
     },[state.editorNodes.length ,apply]);
 
 
+    const [direction, setDirection] = useState<'ltr' | 'rtl'>(state.preferences.languageDirection);
+      const [isAnimating, setIsAnimating] = useState(false);
+     const handleDirectionToggle = () => {
+    const newDirection = direction === 'ltr' ? 'rtl' : 'ltr';
+    settypeDirection(newDirection);
+    apply({
+      type: "CHANGE_LANGUAGE",
+      direction: newDirection
+    })
+    const firstNode = state?.editorNodes?.[0];
+    const element = document.querySelector(`[data_node_id="${firstNode?.id}"]`);
+    
+    (element as HTMLElement).focus();
+     if (isAnimating) return;
+        setIsAnimating(true);
+        
+        // Trigger animation
+        setTimeout(() => {
+          setDirection(newDirection);
+          // onToggle?.();
+        }, 150);
+        
+        // Reset animation state
+        setTimeout(() => setIsAnimating(false), 300);
+  };
+
   return (
     <>
     {/* <FocusProvider> */}
@@ -346,6 +360,8 @@ useEffect(() => {
         initialDirection={typeDirection}
         onToggle={handleDirectionToggle}
         position="top-right"
+        onAnimation={isAnimating}
+        onDirection={direction}
       />}
       <div className="nodes-container" ref={editorRef}>
         {state.editorNodes.map((node,i) => {
@@ -373,7 +389,6 @@ useEffect(() => {
                 onMeta_test={props.meta_test}
                 onNotficationList={onNotification}
                 onDelete={DeleteNode}
-
               />
             );
           }
@@ -397,10 +412,14 @@ useEffect(() => {
       </div>
       {state.editorNodes.length < 1 &&
        <div className="urgent-fab"> 
-        <FabContainer onisOpen={isOpen} onsetIsOpen={setIsOpen} 
-              onapply={apply}
-              onActiveNode={null} onNodeId={undefined} newnode={true}
-              />
+        <FabContainer 
+          mode={"DEFAULT"}
+          onisOpen={isOpen} 
+          onsetIsOpen={setIsOpen} 
+          onapply={apply}
+          onActiveNode={null} onNodeId={undefined} 
+          newnode={true}
+        />
       </div>
       }
       {!props.meta_test && toolbarState.show && (

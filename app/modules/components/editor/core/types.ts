@@ -13,6 +13,7 @@ export type Section = {
   content: string;
   placeholder?: string;
 };
+
 export  type NodeAction =
    { type: 'ADD_NODE'; tagType: EditorNodeTag, nodeId?: string,imageMeta?: imageMeta}
   | {type: "DELETE_NODE"; nodeId: string, parentId?: string, tagType?: EditorNodeTag, mediaId?: string }
@@ -24,7 +25,7 @@ export  type NodeAction =
     focus: number; format: keyof Omit<TextLeaf, 'text'>}
   | {type: "CHANGE_LANGUAGE"; direction: "ltr" | "rtl"}
   | {type: "ADD_ULV", nodeId: string}
-  | {type: "ADD_LIST", listType: EditorNodeTag, listDirection?: "column" | "row"}
+  | {type: "ADD_LIST", nodeId?: string, listType: EditorNodeTag, listDirection?: "column" | "row"}
   | {type: "ADD_LIST_ITEM", listId: string, afterItemId: string}
   | {type: "UPDATE_LIST_ITEM", itemId: string, content: TextLeaf[]}
  
@@ -81,6 +82,7 @@ export type EditorNode = {
 };
 export interface imageMeta  {
   src?: string; 
+  mediaId?: string;
   alt?: string;
   width?: number;
   height?: number;
@@ -88,7 +90,7 @@ export interface imageMeta  {
   mediaItem?: MediaItem;
 }
 export interface EditorPreferences {
-  languageDirection?: 'ltr' | 'rtl';
+  languageDirection: 'ltr' | 'rtl';
   theme?: 'light' | 'dark';
   fontSize?: number;
   fontFamily?: string;
@@ -110,7 +112,6 @@ export type EditorState = {
   };
   nodeMetadata: Map<string, { createdAt: number; order?: number }>;
 } 
-export type MediaStore = Map<string, MediaItem> | undefined;
 
 export type MediaItem = {
   // base64?: string;      
@@ -152,9 +153,7 @@ export type ContentNodeProps = {
     show: boolean;
     message?: string;
     }>>
-  onDelete: (nodeId: string, nodeParentId?: string, tagType?: EditorNodeTag) => void;
-  // onDirection: 'ltr' | 'rtl'
-  // Blur happense when focus is on nodeRef and then gets unfocused.
+  onDelete: (nodeId: string, nodeParentId?: string, tagType?: EditorNodeTag, mediaId?: string) => void;
 };
 
 export interface ListContainerProps {
@@ -173,11 +172,11 @@ export interface ListContainerProps {
 }
 
 export type fabContainerProps = {
+  mode: "DEFAULT" | "NORMAL"
   onisOpen: boolean,
   onsetIsOpen: React.Dispatch<React.SetStateAction<boolean>>,
-  // onAdd: (type: EditorNodeTag,   listDirection?: "column" | "row",imageMeta?: {src: string, filename: string}) => void, 
   onActiveNode: string | null,
-  onNodeId: string | undefined,
+  onNodeId?: string,
   onapply: (action: NodeAction) => void,
   newnode?: boolean;
   lnd?: "rtl" | "ltr"
@@ -232,3 +231,14 @@ export type blurUpdate_Prop ={
     tag: EditorNodeTag,
     content: TextLeaf[]
   }
+
+  export interface DirectionToggleProps {
+    initialDirection?: 'ltr' | 'rtl';
+    // onToggle: (direction: 'ltr' | 'rtl') => void;
+    onToggle: () => void;
+    //  onClick: ()=> void
+    position?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
+    onAnimation: boolean,
+    onDirection: "ltr" | "rtl"
+  }
+  

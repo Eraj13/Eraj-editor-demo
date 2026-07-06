@@ -5,7 +5,7 @@
   font-size: 14px;
   overflow-x: hidden;
   overflow-y: hidden;
-  height: fit-content;
+  /* height: fit-content; */
   box-sizing: border-box;
 }
 .eraj-editor_h1{
@@ -57,7 +57,77 @@
   filter: grayscale(0.2);
   user-select: none;
 }
-.download, .view{
-  /* position: absolute;
-  bottom: 30px; */
+.editor-actions .btn-download,.btn-view {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  min-width: 120px;
+  position: relative;
+  overflow: hidden;
+}
+
+.editor-actions .btn-view:active {
+  transform: scale(0.96);
+}
+.editor-actions .btn-download:active {
+  transform: scale(0.96);
+}
+
+.btn-download {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+  padding: 7px 0;
+  margin-right: 5px;
+}
+
+.btn-download:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.45);
+}
+
+.btn-download:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+.btn-download .icon {
+  font-size: 18px;
+  line-height: 1;
+}
+/* ============================================
+   View Button
+   ============================================ */
+.btn-view {
+  background: white;
+  color: #1f2937;
+  border: 2px solid #e5e7eb;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.btn-view:hover {
+  background: #f8fafc;
+  border-color: #3b82f6;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.btn-view:active {
+  background: #f1f5f9;
+  transform: translateY(0);
+}
+
+.btn-view .icon {
+  font-size: 18px;
+  line-height: 1;
 }

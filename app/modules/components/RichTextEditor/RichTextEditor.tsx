@@ -26,9 +26,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
 }) => {
  
   const [isLoading, setIsLoading] = useState(false);
-
-  const [nodes, setNodes] = useState<EditorState>(emptyState);
-  
+  const [nodes, setNodes] = useState<EditorState>(emptyState); 
   const [metadata_, setMetadata] = useState<EditorState>(emptyState);
   const [isModalOpen, setisModalOpen] = useState(false);
   const [showSaveNotification, setNotification] = useState<({show: boolean, message?: string})>({show: false, message: "saved"});
@@ -102,7 +100,6 @@ const handleSaveAsJSON = () => {
 
 // ✅ Demo — opens the JSON as a formatted view in a new tab
   const viewJSON = () => {
-    // const jsonString = JSON.stringify(nodes, null, 2);
     const jsonString = JSON.stringify(nodes, null, 2)
     const blob = new Blob([jsonString], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -147,11 +144,11 @@ const handleSaveAsJSON = () => {
         onHide={() => setNotification({show: false})}
       />
     </div>
-    <button className="download" onClick={handleSaveAsJSON}>
-      💾 Download JSON
+    <button className="btn-download" onClick={handleSaveAsJSON} title="Download article as JSON file">
+      <span className="icon">DOWNLOAD JSON⬇️</span>
     </button>
-    <button className="view" onClick={viewJSON}>
-      👁️ View JSON
+    <button className="btn-view" onClick={viewJSON}>
+      <span className="icon">👁️ View JSON</span>
     </button>
     </div>    
   )

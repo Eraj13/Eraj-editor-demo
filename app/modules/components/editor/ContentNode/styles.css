@@ -8,7 +8,7 @@
   margin: 0;
   padding: 0;
   border: 0;
-  /* font-size: inherit; */
+  font-family: inherit;
 }
 
 .content-node {
@@ -26,7 +26,7 @@
   font-size: 15px;
 }
 
-.image{
+.eraj-editor .image{
   max-height: 500px;
 }
 .image-container {
@@ -70,12 +70,11 @@
   pointer-events: auto;
 }
 .content-node.p {
-  /* min-height: 15px; */
   font-size: 1.5rem;
 }
 .content-node.li {
   min-height: 15px;
-  font-size: 2rem;
+  font-size: 1rem;
 }
 .content-node.h1 {
   text-align: center;
@@ -97,12 +96,14 @@
   width: 100%;
   display: flex;
   flex-direction: row;
-  /* min-height: 4.5rem; */
   padding-top: 5px;
 }
-.node-block.reverse{
-  flex-flow: row-reverse;
+.node-block.rtl{
+  font-family: "Vazirmatn";
 }
+/* .node-block.reverse{
+  flex-flow: row-reverse;
+} */
 .node-wrapper{
   width: 100%;
   position: relative;
@@ -111,6 +112,7 @@
 }
 .node-wrapper.image{
   display: flex;
+  max-height: 580px;
 }
 .eraj-editor br{
   height: 0 !important;
@@ -130,33 +132,49 @@
   min-width: 200px;
 }
 
-.delete-div{
-  position: relative;
-  width: 22px;
+.delete-btn{
+  margin: 0;
+  padding: 0;
+  width: 20px;
   height: 20px;
-  background-color: #e2482c;
+  background: #ffffff;
   border-radius: 50%;
   z-index: 5;
   cursor: pointer;
   color: black;
-  align-self: center;
   border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   &:hover{
-    color: rgb(238, 51, 51);
-    background-color: rgb(187, 194, 99);
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #ffffff;
   }
 }
-.delete-div.list{
+
+.delete-btn svg {
+  display: block;
+  width: 14px;
+  height: 14px;
+  transform: translateX(-.5px);
+}
+.delete-btn .rtl{
+  transform: translateX(.5px);
+ }
+.delete-btn.list{
   margin-right: -19px;
   align-self: self-end;
-
 }
+
 .disappear{
   opacity: 0;
 }
+
 ._L_D_right{
   margin-left: -18px
 }
+
 .list-marker {
   min-width: 9px;
   text-align: right;
@@ -164,4 +182,53 @@
   color: #666;
   font-family: monospace;
   user-select: none;
+}
+
+.image-container.loading {
+  border: 2px dashed #3b82f6;
+  background: #f0f7ff;
+  border-radius: 8px;
+  padding: 16px;
+  transition: all 0.3s ease;
+}
+
+.image-placeholder-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 200px;
+  color: #6b7280;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e5e7eb;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.image-container.error {
+  border: 2px solid #ef4444;
+  background: #fef2f2;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.image-placeholder-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: #dc2626;
+  font-size: 18px;
+  gap: 8px;
 }
