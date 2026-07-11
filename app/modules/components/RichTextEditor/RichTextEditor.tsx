@@ -1,7 +1,7 @@
 'use client';
 import { EditorNode, EditorState } from "@/app/modules/components/editor/core/types";
-import { createDefaultNode, downloadJSON, emptyState, generateSeoMetaFromNodes } from "@/app/modules/components/editor/utils/utils";
-import { useState, } from "react";
+import { createDefaultNode, emptyState, generateSeoMetaFromNodes, handleSaveAsJSON, viewJSON } from "@/app/modules/components/editor/utils/utils";
+import { useEffect, useState, } from "react";
 import './RichTextEditor.css';
 import { SaveNotification } from "@/app/modules/components/editor/react/saveNotification";
 import { RichTextEditorProps } from "./types";
@@ -30,7 +30,6 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
   const [metadata_, setMetadata] = useState<EditorState>(emptyState);
   const [isModalOpen, setisModalOpen] = useState(false);
   const [showSaveNotification, setNotification] = useState<({show: boolean, message?: string})>({show: false, message: "saved"});
-  
   const metaComputing = ()=> {
     const { 
       titleNode,
@@ -59,6 +58,16 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
       nodeMetadata: nodes.nodeMetadata || new Map(),
     });      
   }
+  const [showButtons, setShowButtons] = useState(false);
+
+    useEffect(() => {
+    // ✅ Delay button rendering by 300ms
+    const timer = setTimeout(() => {
+      setShowButtons(true);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, []);
+
 
   async function handlePublish() {
     // setIsLoading(true);
@@ -70,50 +79,11 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
     setNotification({show: true,message: "Transfered properly."});
     setIsLoading(false);
   }
-  // In your RichTextEditor or page.tsx
-const handleSaveAsJSON = () => {
-  // metadata gets created
-  const { 
-    // titleNode,
-    slug_h1,
-    meta_title, // customize site name
-    meta_description,
-    keywords
-  } = generateSeoMetaFromNodes(nodes);
 
-  const articleData = {
-    version: '1.0',
-    exportedAt: new Date().toISOString(),
-    editorNodes: nodes.editorNodes,  // Your editor nodes
-    metadata: {
-      slug_h1,
-      meta_title, 
-      meta_description,
-      meta_keywords: [...keywords],
-    },
-    nodeMetadata: nodes.nodeMetadata,    // Optional: metadata
-    preferences: nodes.preferences,
-  };
-  downloadJSON(articleData, `article-${Date.now()}.json`);
-  
-};
-
-// ✅ Demo — opens the JSON as a formatted view in a new tab
-  const viewJSON = () => {
-    const jsonString = JSON.stringify(nodes, null, 2)
-    const blob = new Blob([jsonString], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    
-    // ✅ Opens the JSON in a new tab (as a file)
-    window.open(url, '_blank');
-    
-    // ✅ Clean up after a moment
-    setTimeout(() => URL.revokeObjectURL(url), 10000);
-  };
   return (
     <div className={"eraj-editor"}>
-      <h1 className={"eraj-editor_h1"}>Creating a new Article</h1>
-      <MyTextEditor mode="article" onChange={setNodes} key="article" meta_test={false} isModalOpen={isModalOpen} onNotification={setNotification} />
+      <h1 className={"eraj-editor_h1"}>Creating a new Article</h1>     
+       <MyTextEditor mode="article" onChange={setNodes} key="article" meta_test={false} isModalOpen={isModalOpen} onNotification={setNotification} />
       {isModalOpen && meta_data && (
       <div className="modal">
         <MyTextEditor value={metadata_} mode="meta_test" onChange={setMetadata} key="meta_test" meta_test={true}  />
@@ -130,27 +100,34 @@ const handleSaveAsJSON = () => {
         </div>
       </div>
       )}
-       <div className={`editor-controls ${isModalOpen ? "dim" : ""}`} inert={isModalOpen ? true : false}>
+
+       {/* ✅ Buttons appear after delay */}
+      {showButtons && (
+       <div className={`editor-controls ${isModalOpen ? "dim" : ""}`}
+       inert={isModalOpen ? true : false}>
+          
+          <div className="div-d0wnload-view">
+            <button className="btn-download" onClick={() =>handleSaveAsJSON(nodes)} title="Download article as JSON file">
+              <span className="icon">DOWNLOAD JSON⬇️</span>
+            </button>
+            <button className="btn-view" onClick={() => viewJSON(nodes)}>
+              <span className="icon">👁️ View JSON</span>
+            </button>
+          </div>
           <button
             className={`publish-button ${isLoading ? 'button-loading' : ''}`}
             onClick={metaComputing}
-            disabled={isLoading}
-          >
+            disabled={isLoading}>
             Proceed to Publish
-          </button>
-          
-      <SaveNotification 
-        onNotification={showSaveNotification}
-        onHide={() => setNotification({show: false})}
-      />
-    </div>
-    <button className="btn-download" onClick={handleSaveAsJSON} title="Download article as JSON file">
-      <span className="icon">DOWNLOAD JSON⬇️</span>
-    </button>
-    <button className="btn-view" onClick={viewJSON}>
-      <span className="icon">👁️ View JSON</span>
-    </button>
+          </button>   
+          <SaveNotification 
+            onNotification={showSaveNotification}
+            onHide={() => setNotification({show: false})}
+          />
+      </div>
+      )}
     </div>    
+    
   )
 }
   {/* {isPublishing ? (

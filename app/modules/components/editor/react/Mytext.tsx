@@ -355,20 +355,18 @@ useEffect(() => {
     <div className={`container_ ${props.isModalOpen ? "editor-overlay": ""}`} inert={props.isModalOpen ? true : false} key={props.mode}>
       {props.meta_test &&
       <h1 className='container_h1'>CONFIRM THE META DATA</h1>}
-      {!props.meta_test &&
+      {!props.meta_test &&(
        <DirectionToggle 
         initialDirection={typeDirection}
         onToggle={handleDirectionToggle}
         position="top-right"
         onAnimation={isAnimating}
         onDirection={direction}
-      />}
+      />)}
       <div className="nodes-container" ref={editorRef}>
         {state.editorNodes.map((node,i) => {
-          // Skip rendering list items here - they'll be rendered by their parent list
-          
-          if (node.parentId) return null;
-          
+          // Skip rendering list items here - they'll be rendered by their parent list         
+          if (node.parentId) return null;         
           // If this is a list container, render ListContainer with its children
           if (node.tag === 'ul' || node.tag === 'ol') {
             const listItems = state.editorNodes.filter(
@@ -420,7 +418,7 @@ useEffect(() => {
           onActiveNode={null} onNodeId={undefined} 
           newnode={true}
         />
-      </div>
+       </div>
       }
       {!props.meta_test && toolbarState.show && (
         <FormatToolbar
@@ -437,11 +435,6 @@ useEffect(() => {
           onCancel={() => setToolbarState(prev => ({ ...prev, show: false ,showLinkInput: false}))}
         />
       )}
-          {/* // Notification at bottom */}
-    {/* <SaveNotification 
-      visible={showSaveNotification}
-      onHide={() => setShowSaveNotification(false)}
-    /> */}
     </div>
     </>
   );

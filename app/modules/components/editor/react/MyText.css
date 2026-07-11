@@ -1,3 +1,7 @@
+.container_{
+  width: 100%;
+  /* min-height: 40vh; */
+}
 .container_.editor-overlay {
   pointer-events: none;
   opacity: 0.6;
@@ -218,9 +222,6 @@ br + * {
   bottom: -15px;
   right: 5px;
 }
-.container_{
-  width: 100%;
-}
 
 .nodes-container {
   margin-bottom: 20px;
@@ -232,17 +233,7 @@ br + * {
 }
 
 
-
-.editor-controls {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  justify-content: flex-end;
-  margin-top: 10px;
-}
-
-.add-section-button,
-.publish-button {
+.add-section-button {
   padding: 7.5px 15px;
   border: none;
   border-radius: 6px;
@@ -258,25 +249,6 @@ br + * {
 
 .add-section-button:hover {
   background: #e5e7eb;
-}
-
-.publish-button {
-  background: #2563eb;
-  color: white;
-}
-
-.publish-button:hover:not(:disabled) {
-  background: #1d4ed8;
-}
-
-.publish-button:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
-.publish-button.publishing {
-  position: relative;
-  padding-left: 25px;
 }
 
 .spinner {
@@ -356,8 +328,7 @@ figcaption:empty::before {
   justify-content: flex-end;
 }
 
-.add-section-button, 
-.publish-button {
+.add-section-button {
   padding: 8px 16px;
   border: none;
   border-radius: 4px;
@@ -368,10 +339,6 @@ figcaption:empty::before {
   background: #f0f0f0;
 }
 
-.publish-button {
-  background: #007bff;
-  color: white;
-}
 .button-loading {
   position: relative;
   color: white;

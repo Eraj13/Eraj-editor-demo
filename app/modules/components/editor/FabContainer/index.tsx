@@ -1,15 +1,17 @@
 'use client';
-import React, { useMemo, useRef,  } from 'react';
+import React, { useMemo, useRef, useState,  } from 'react';
 import './styles.css';
 import { fabContainerProps, EditorNodeTag, MediaItem  } from '../core/types';
 import { addNode,  slugifyFilename } from '../utils/utils';
 import { BulletListIcon, ColumnListIcon, RowListIcon } from '../utils/constants';
+import { ImageUrlInput } from '../react/ImageUrlInput';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const FabContainer = ({mode ,onisOpen, onsetIsOpen, onapply,onActiveNode, onNodeId, newnode, lnd}: fabContainerProps) => {
   
   const fabRef = React.useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
+  const [showUrlInput, setShowUrlInput] = useState(false);
   // ✅ useMemo — computes value during render, no extra re-render
 const visibilities = useMemo(() => {
   if (onNodeId === onActiveNode && !newnode) return "visible";
@@ -28,37 +30,55 @@ const visibilities = useMemo(() => {
     reader.onload = async (event) => {
       if (event.target?.result) {
       const dataUrl = event.target.result.toString();
-       // Create MediaItem
       const mediaItem: MediaItem = {
-        // base64: dataUrl.split(',')[1], 
         filename: file.name,
         uploaded: false,
         type: file.type,
-        size: file.size
+        size: file.size,
       };  
       
       const imageMeta = {
         src: dataUrl,
+        isUrl: false,
         filename: slugifyFilename(file.name),        
-        mediaItem, // 🆕 Pass separately
+        mediaItem,
       }
+
       addNode("image", onapply, onNodeId, undefined, imageMeta,)
       }
     };
     reader.readAsDataURL(file);
     onsetIsOpen(false);
-    // setVisibilitys("hidden");
   };
   
+   const handleUrlInsert = (url: string, filename: string) => {
+    // ✅ Create image node from URL (not Base64!)
+    const mediaItem: MediaItem = {
+        filename: filename,
+      };  
+      
+      const imageMeta = {
+        src: url,
+        isUrl: true,
+        filename: slugifyFilename(filename),        
+        mediaItem, 
+      }
+      addNode("image", onapply, onNodeId, undefined, imageMeta,)
+      onsetIsOpen(false);  
+  };
+
   const addNewNode = function (type: EditorNodeTag, listDirection?: "column" | "row" ) {
-    // onAdd(type, listDirection);
     addNode(type, onapply, onNodeId, listDirection);
-    // setVisibilitys("hidden");
     onsetIsOpen(false);  
-    
   }
   
+  function closeAll() {
+    setShowUrlInput(false);
+    onsetIsOpen(false);  
+  }
+
   return (
+    <>
     <div 
       className="fab-wrapper"
       style={{
@@ -111,9 +131,9 @@ const visibilities = useMemo(() => {
             <button 
               className={`sub-button ${lnd === "rtl" && "rtl"}`}
               aria-label="Add video"
-              disabled // Currently not implemented
+              onClick={() => setShowUrlInput(true)}
             >
-              🎥
+              🔗
             </button>
           </div>
         <div className="list-add-wrapper">
@@ -157,6 +177,11 @@ const visibilities = useMemo(() => {
         </div>
       </div>
     </div>
+    <ImageUrlInput isOpen={showUrlInput}
+      onClose={() => closeAll()} 
+      onInsert={handleUrlInsert}
+    />
+    </>
   );
 };
 

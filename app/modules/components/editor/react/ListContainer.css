@@ -91,7 +91,7 @@
   padding: 0;
   z-index: 5;
   align-self: center;
-  margin-bottom: 12px;
+  /* margin-bottom: 12px; */
 }
 
 .list-item-row:hover .list-item-add {
@@ -118,7 +118,7 @@
 
 [dir="rtl"] .list-item-add {
   left: auto;
-  right: -20px;
+  /* right: -20px; */
 }
 
 /* Nested lists */
@@ -129,4 +129,13 @@
 [dir="rtl"] .list-container .list-wrapper {
   margin-left: 0;
   margin-right: 32px;
+}
+.div-buttons{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  height: 100%;
+}
+.list-item-add span{
+  transform: translateY(-1px);
 }

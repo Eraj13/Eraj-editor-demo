@@ -3,6 +3,7 @@ import React from 'react';
 import { ListContainerProps } from '../core/types';
 import './ListContainer.css';
 import { ContentNode } from '../ContentNode';
+import { DeleteButton } from './DeleteButton';
 
 
 
@@ -77,17 +78,24 @@ export const ListContainer: React.FC<ListContainerProps> = ({
                 onDelete={onDelete}
               />
             </div>
-            
-            {/* Quick add button between items */}
-            {/* {!onMeta_test && ( */}
+
+            <div className='div-buttons'>
+                
               <button
                 className="list-item-add"
                 onClick={() => addListItem(item.id)}
                 title="Add item here"
-              >
+                >
+                  <span>
+
                 +
+                  </span>
               </button>
-            {/* )} */}
+              <DeleteButton nodeTag={"li"}
+                visibility={true} 
+                lngD={onPreferences?.languageDirection}
+                onClick={() => onDelete(item.id,item.parentId, item.tag)} />
+              </div>        
           </li>
         ))}
       </ul>

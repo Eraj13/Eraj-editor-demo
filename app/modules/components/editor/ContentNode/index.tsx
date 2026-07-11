@@ -7,7 +7,8 @@ import { FabContainer } from '../FabContainer';
 import './styles.css';
 import { blurUpdate, slugifyFilename } from '../utils/utils';
 import { getImageFromIndexedDB } from '../utils/indexDB';
-import { DeleteIcon, PLACEHOLDER_IMAGE } from '../utils/constants';
+import { PLACEHOLDER_IMAGE } from '../utils/constants';
+import { DeleteButton } from '../react/DeleteButton';
 
 
 const ZWSP = '\u200B';
@@ -94,8 +95,7 @@ export const ContentNode = React.memo(function ContentNode({
         if (event.target?.result) {
           const dataUrl = event.target.result.toString();
           const mediaItem: MediaItem = {
-              // base64: dataUrl.split(',')[1], 
-              filename: file.name,
+              filename: slugifyFilename(file.name),
               uploaded: false,
               type: file.type,
               size: file.size
@@ -107,7 +107,6 @@ export const ContentNode = React.memo(function ContentNode({
             imageMeta: {
               mediaId: node.imageMeta?.mediaId,
               src: dataUrl,
-              filename: slugifyFilename(file.name),
               mediaItem         
             }
           };
@@ -140,7 +139,7 @@ export const ContentNode = React.memo(function ContentNode({
   useEffect(() => {
     const el = nodeRef.current
     el?.addEventListener("keydown", (DeleteBackspace));
-    
+
     return () => {
     el?.removeEventListener("keydown", (DeleteBackspace));
       
@@ -206,7 +205,8 @@ export const ContentNode = React.memo(function ContentNode({
   }, [onapply, node.tag, node.id, onMeta_test]);
   
   useEffect(() => {
-  if (node.tag === "image" && node.imageMeta?.mediaId && node.imageMeta.filename) {
+  if(node.imageMeta?.isUrl && node.imageMeta?.src) setImageSrc(node.imageMeta?.src)
+  else if (node.tag === "image" && node.imageMeta?.mediaId && node.imageMeta?.mediaItem?.filename) {
     setLoadingImg(true);
     getImageFromIndexedDB(node.imageMeta.mediaId).then((image) => {
       if (image) {
@@ -215,7 +215,7 @@ export const ContentNode = React.memo(function ContentNode({
     });
     setLoadingImg(false);
   }
-  }, [node.tag, node.imageMeta?.mediaId, node.imageMeta?.filename]);
+  }, [node.tag, node.imageMeta?.mediaId, node.imageMeta?.mediaItem?.filename, node.imageMeta?.isUrl,node.imageMeta?.src]);
       
 // Also save on beforeunload (as shown above) 
   switch (node.tag) {
@@ -253,14 +253,14 @@ export const ContentNode = React.memo(function ContentNode({
     case 'image':
        // ✅ Show loading state
     if (loadingImg) {
-      return (
+      output = (
         <figure className="image-container loading">
           <div className="image-placeholder-loading">
             <div className="spinner"></div>
             <span>Loading image...</span>
           </div>
           <figcaption className="image-caption">
-            {node.imageMeta?.filename || 'Uploading...'}
+            {node.imageMeta?.mediaItem?.filename || 'Uploading...'}
           </figcaption>
         </figure>
       );
@@ -295,10 +295,10 @@ export const ContentNode = React.memo(function ContentNode({
           className="image-caption"
           style={{direction: onPreferences?.languageDirection}}
           >
+          {/* {renderChildren(node.imageMeta.alt)} figcap automatickly reads text inside it from the page*/}
           </figcaption>}
       </figure>
       );
-      {/* {renderChildren(node.imageMeta.alt)} */}
       break;
     case "li": {
       output = 
@@ -322,25 +322,27 @@ export const ContentNode = React.memo(function ContentNode({
   }
   return (  
     <div onBlur={(e) => handleBlur(e)}  className={`node-block ${onPreferences?.languageDirection}`}
-      style={{direction: node.tag === "image" ? 'ltr': onPreferences?.languageDirection}}>
+      style={{direction:  onPreferences?.languageDirection}}>
       {!onMeta_test && 
       <FabContainer 
-      mode={"NORMAL"}
-      onisOpen={isOpen} onsetIsOpen={setIsOpen} 
-      onapply={onapply}
-      onActiveNode={activeNode} onNodeId={node.id} 
-      lnd={onPreferences?.languageDirection}
+        mode={"NORMAL"}
+        onisOpen={isOpen} onsetIsOpen={setIsOpen} 
+        onapply={onapply}
+        onActiveNode={activeNode} onNodeId={node.id} 
+        lnd={onPreferences?.languageDirection}
       />}
       <div
         className={`node-wrapper ${node.tag === 'li' ? "_li" : ""} ${node.tag === "image" ? "image" : ""}`}
         onFocus={handleChildFocus}>
         {output}
       </div>
-       {(!onMeta_test || node.tag === "li" ) &&
-        <button className={`delete-btn ${node.tag === "li" ? "list" :''}
-        ${activeNode === node.id ? '' : 'disappear'} `} onClick={() => onDelete(node.id, node.parentId, node.tag, node.imageMeta?.mediaId)}>
-          {DeleteIcon({className: onPreferences?.languageDirection})}
-        </button>
+       {(!onMeta_test && node.tag !== "li" ) &&
+        <DeleteButton 
+        nodeTag={node.tag}
+        visibility={activeNode === node.id} 
+        lngD={onPreferences?.languageDirection}
+        onClick={()=> onDelete(node.id, node.parentId, node.tag, node.imageMeta?.mediaId)}
+        />
        }
     </div>
   );

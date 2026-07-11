@@ -1,0 +1,35 @@
+.delete-btn .rtl{
+  transform: translateX(.4px);
+ }
+.delete-btn.list{
+  align-self: self-end;
+}
+
+.delete-btn{
+  margin: 0;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  background: #ffffff;
+  border-radius: 50%;
+  z-index: 5;
+  cursor: pointer;
+  color: black;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  &:hover{
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #ffffff;
+  }
+}
+
+.delete-btn svg {
+  display: block;
+  width: 14px;
+  height: 14px;
+  transform: translateX(-.5px);
+}

@@ -82,11 +82,9 @@ export type EditorNode = {
 };
 export interface imageMeta  {
   src?: string; 
+  isUrl?: boolean;
   mediaId?: string;
   alt?: string;
-  width?: number;
-  height?: number;
-  filename?: string; 
   mediaItem?: MediaItem;
 }
 export interface EditorPreferences {
@@ -119,7 +117,9 @@ export type MediaItem = {
   type?: string;
   size?: number;
   uploaded?: boolean;
-  uploadUrl?: string; 
+  uploadUrl?: string;
+  width?: number;
+  height?: number; 
   error?: string;
 } | undefined;
 
@@ -168,7 +168,7 @@ export interface ListContainerProps {
     show: boolean;
     message?: string;
     }>>
-  onDelete: (nodeId: string, nodeParentId?: string) => void;
+  onDelete: (nodeId: string, nodeParentId?: string, tagType?: EditorNodeTag, mediaId?: string) => void,
 }
 
 export type fabContainerProps = {
@@ -199,10 +199,8 @@ export type ContentNodeData = {
   type: 'paragraph' | 'blockquote' | 'image' | 'linebreak';
   content: string;
   placeholder?: string;
-  imageMeta?: {
-    url?: string;
-    alt?: string;
-  };
+  imageMeta?: imageMeta,
+
 };
 
 export type SectionData = {
@@ -232,13 +230,23 @@ export type blurUpdate_Prop ={
     content: TextLeaf[]
   }
 
-  export interface DirectionToggleProps {
-    initialDirection?: 'ltr' | 'rtl';
-    // onToggle: (direction: 'ltr' | 'rtl') => void;
-    onToggle: () => void;
-    //  onClick: ()=> void
-    position?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
-    onAnimation: boolean,
-    onDirection: "ltr" | "rtl"
-  }
-  
+export interface DirectionToggleProps {
+  initialDirection?: 'ltr' | 'rtl';
+  onToggle: () => void;
+  position?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
+  onAnimation: boolean,
+  onDirection: "ltr" | "rtl"
+}
+
+export interface ImageUrlInputProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onInsert: (url: string, filename: string) => void;
+}
+
+export interface DeleteButtonProps {
+nodeTag: EditorNodeTag,
+lngD:"ltr" | "rtl" | undefined,
+visibility: boolean,
+onClick: () => void
+}

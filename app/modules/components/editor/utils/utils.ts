@@ -1,4 +1,4 @@
-import { blurUpdate_Prop, DEFAULT_PREFERENCES, EditorNode, EditorNodeTag, EditorState, NodeAction, TextLeaf, EditorPreferences } from '../core/types';
+import { blurUpdate_Prop, DEFAULT_PREFERENCES, EditorNode, EditorNodeTag, EditorState, NodeAction, TextLeaf, EditorPreferences, imageMeta } from '../core/types';
 import { STORAGE_KEY } from './constants';
 import { saveImageToIndexedDB } from './indexDB';
 
@@ -207,23 +207,23 @@ export const placeHolder_re = (tag: EditorNodeTag, lng?: "ltr" | "rtl"  ) => {
     if(tag === "image") return "Type caption"
 }
 
-export const addNode = (type: EditorNodeTag, onapply: ((action: NodeAction) => void), nodeId?: string, listDirection?: "column" | "row", imageMeta?: {
-    src: string;
-    filename: string;
-  }) => {
+export const addNode = (type: EditorNodeTag, onapply: ((action: NodeAction) => void), nodeId?: string, listDirection?: "column" | "row", imageMeta?: imageMeta) => {
     if(type !== "ul" && type !== "li" && type !== "ol") { 
       const imageId = generateId();
-      addImageNode(imageId, imageMeta?.src)
+      if(!imageMeta?.isUrl) addImageNodeToIndexDb(imageId, imageMeta?.src);
       onapply({
         type: 'ADD_NODE',
         tagType: type,
         nodeId,
-        imageMeta: {...imageMeta,mediaId: imageId, src: `imageId-${imageId}`}
+        imageMeta: {...imageMeta, 
+          mediaId: imageId, 
+          src: imageMeta?.isUrl ? imageMeta.src : `imageId-${imageId}`}
       });
-      requestAnimationFrame(() => {
-      const element= document.querySelector(`[data_node_id="${nodeId}"]`) as HTMLElement;
-      element.scrollIntoView({behavior: 'smooth', block: 'end'})
-      })
+      // requestAnimationFrame(() => {
+      // const element= document.querySelector(`[data_node_id="${imageId}"]`) as HTMLElement;
+      // console.log("element",element)
+      // element.scrollIntoView({behavior: 'smooth', block: 'end'})
+      // })
     }
     else {
       onapply({
@@ -248,7 +248,7 @@ export const addNode = (type: EditorNodeTag, onapply: ((action: NodeAction) => v
   }; 
 
   // ✅ Async logic outside reducer
-const addImageNode = async (imageId: string, src?: string ) => {
+export const addImageNodeToIndexDb = async (imageId: string, src?: string ) => {
   await saveImageToIndexedDB(imageId, src);
 };
 
@@ -271,3 +271,42 @@ export const saveToLocal = (newState: EditorState) => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(newState, null, 2));
 } 
 
+// ✅ Demo — opens the JSON as a formatted view in a new tab
+  export const viewJSON = (nodes: EditorState) => {
+    const jsonString = JSON.stringify(nodes, null, 2)
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    // ✅ Opens the JSON in a new tab (as a file)
+    window.open(url, '_blank');
+    
+    // ✅ Clean up after a moment
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
+  };
+
+
+export const handleSaveAsJSON = (nodes: EditorState) => {
+  // metadata gets created
+  const { 
+    // titleNode,
+    slug_h1,
+    meta_title, // customize site name
+    meta_description,
+    keywords
+  } = generateSeoMetaFromNodes(nodes);
+
+  const articleData = {
+    version: '1.0',
+    exportedAt: new Date().toISOString(),
+    editorNodes: nodes.editorNodes,  // Your editor nodes
+    metadata: {
+      slug_h1,
+      meta_title, 
+      meta_description,
+      meta_keywords: [...keywords],
+    },
+    nodeMetadata: nodes.nodeMetadata,    // Optional: metadata
+    preferences: nodes.preferences,
+  };
+  downloadJSON(articleData, `article-${Date.now()}.json`);
+};

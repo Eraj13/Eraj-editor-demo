@@ -28,7 +28,7 @@ export function editorNodeReducer(
         [newNode.id]: { createdAt: Date.now()}
        },
       };
-
+      
       saveToLocal(newState);
       return newState;
     }
@@ -94,7 +94,7 @@ export function editorNodeReducer(
 
     case 'UPDATE_IMAGE_SRC':{
       const newImageMeta = action.node.imageMeta;
-      updateImageInIndexedDB(newImageMeta?.mediaId, newImageMeta?.src, newImageMeta?.filename);
+      updateImageInIndexedDB(newImageMeta?.mediaId, newImageMeta?.src, newImageMeta?.mediaItem?.filename);
       const newNode = state.editorNodes.map((node) =>
         node.id === action.node.id && node.tag === 'image' && action.node.imageMeta
           ? {
@@ -102,7 +102,7 @@ export function editorNodeReducer(
               imageMeta: {
                 ...node.imageMeta,
                 src: '',
-                filename: newImageMeta?.filename,
+                filename: newImageMeta?.mediaItem?.filename,
                 mediaItem: newImageMeta?.mediaItem
               }
             }

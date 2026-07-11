@@ -19,6 +19,25 @@
   background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+
+.editor-controls {
+  display: flex;
+  /* gap: 10px; */
+  /* align-items: center; */
+  /* justify-content: flex-end; */
+  margin-top: 10px;
+  justify-content: space-between; 
+}
+@keyframes glowPulse {
+  0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.3); }
+  50% { box-shadow: 0 0 20px 4px rgba(59, 130, 246, 0.1); }
+  100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+}
+
+.editor-controls button{
+  animation: glowPulse 0.6s ease 400ms forwards;
+}
+
 .modal{
   position: absolute;
   top: 4rem;
@@ -52,7 +71,7 @@
   background-color: rgb(224, 158, 72);
 }
 .dim{
-   pointer-events: none;
+  pointer-events: none;
   opacity: 0.6;
   filter: grayscale(0.2);
   user-select: none;
@@ -130,4 +149,58 @@
 .btn-view .icon {
   font-size: 18px;
   line-height: 1;
+}
+
+.rich-editor-loading{
+  height: 50vh;
+  width: 100%;
+  background-color: white;
+}
+
+.publish-button {
+  padding: 7.5px 15px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.publish-button {
+  background: #2563eb;
+  color: white;
+}
+
+.publish-button:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.publish-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.publish-button.publishing {
+  position: relative;
+  padding-left: 25px;
+}
+
+.publish-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.publish-button {
+  background: #007bff;
+  color: white;
+}
+
+
+.loading-spinner span{
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  font-size: 5rem;
 }

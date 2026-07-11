@@ -132,40 +132,7 @@
   min-width: 200px;
 }
 
-.delete-btn{
-  margin: 0;
-  padding: 0;
-  width: 20px;
-  height: 20px;
-  background: #ffffff;
-  border-radius: 50%;
-  z-index: 5;
-  cursor: pointer;
-  color: black;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  &:hover{
-  background: #ef4444;
-  border-color: #ef4444;
-  color: #ffffff;
-  }
-}
 
-.delete-btn svg {
-  display: block;
-  width: 14px;
-  height: 14px;
-  transform: translateX(-.5px);
-}
-.delete-btn .rtl{
-  transform: translateX(.5px);
- }
-.delete-btn.list{
-  margin-right: -19px;
-  align-self: self-end;
-}
 
 .disappear{
   opacity: 0;
@@ -190,6 +157,7 @@
   border-radius: 8px;
   padding: 16px;
   transition: all 0.3s ease;
+  min-height: 20vh;
 }
 
 .image-placeholder-loading {
