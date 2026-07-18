@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, RefObject, SetStateAction } from "react";
 
 export type ActiveMarks = {
   bold?: boolean;
@@ -28,13 +28,13 @@ export  type NodeAction =
   | {type: "ADD_LIST", nodeId?: string, listType: EditorNodeTag, listDirection?: "column" | "row"}
   | {type: "ADD_LIST_ITEM", listId: string, afterItemId: string}
   | {type: "UPDATE_LIST_ITEM", itemId: string, content: TextLeaf[]}
- 
-export type Action =
-  | { type: 'ADD_SECTION'; payload: SectionData }
-  | { type: 'REMOVE_SECTION'; id: string }
-  | { type: 'UPDATE_NODES'; sectionId: string; nodes: ContentNodeData[] }
-  | { type: 'INSERT_NODE'; sectionId: string; index: number; node: ContentNodeData }
-  | { type: 'UPDATE_NODE'; sectionId: string; nodeId: string; updates: Partial<ContentNodeData> };
+  | {type: "CLEAR_STATE"}
+// export type Action =
+//   | { type: 'ADD_SECTION'; payload: SectionData }
+//   | { type: 'REMOVE_SECTION'; id: string }
+//   | { type: 'UPDATE_NODES'; sectionId: string; nodes: ContentNodeData[] }
+//   | { type: 'INSERT_NODE'; sectionId: string; index: number; node: ContentNodeData }
+//   | { type: 'UPDATE_NODE'; sectionId: string; nodeId: string; updates: Partial<ContentNodeData> };
   
 export type MyTextEditorProps = {
   value?: EditorState;                     // controlled
@@ -54,7 +54,8 @@ export type MyTextEditorProps = {
 
   className?: string;
   meta_test?: boolean,
-  isModalOpen?: boolean
+  isModalOpen?: boolean,
+  onClearReady?: (clearFn: () => void) => void;
 };
 
 export type TextLeaf = {
@@ -153,8 +154,10 @@ export type ContentNodeProps = {
     show: boolean;
     message?: string;
     }>>
-  onDelete: (nodeId: string, nodeParentId?: string, tagType?: EditorNodeTag, mediaId?: string) => void;
+  // onDelete: (nodeId: string, nodeParentId?: string, tagType?: EditorNodeTag, mediaId?: string) => void;
+  onDelete: (onDeleteProp: onDeleteProp) => void;
 };
+export interface onDeleteProp {nodeId: string, nodeParentId?: string, nodeTag?: EditorNodeTag, mediaId?: string, imageHeight?: number}
 
 export interface ListContainerProps {
   listNode: EditorNode; // The ul/ol node
@@ -168,7 +171,7 @@ export interface ListContainerProps {
     show: boolean;
     message?: string;
     }>>
-  onDelete: (nodeId: string, nodeParentId?: string, tagType?: EditorNodeTag, mediaId?: string) => void,
+  onDelete: (onDeleteProp: onDeleteProp) => void,
 }
 
 export type fabContainerProps = {
@@ -249,4 +252,10 @@ nodeTag: EditorNodeTag,
 lngD:"ltr" | "rtl" | undefined,
 visibility: boolean,
 onClick: () => void
+}
+
+export interface EditorHandle {
+  clearNode: () => void;
+  // getState: () => EditorStat;
+  // focusNode: (nodeId: string) => void;
 }

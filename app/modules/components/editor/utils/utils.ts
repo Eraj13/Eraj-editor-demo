@@ -1,4 +1,4 @@
-import { blurUpdate_Prop, DEFAULT_PREFERENCES, EditorNode, EditorNodeTag, EditorState, NodeAction, TextLeaf, EditorPreferences, imageMeta } from '../core/types';
+import { blurUpdate_Prop, DEFAULT_PREFERENCES, EditorNode, EditorNodeTag, EditorState, NodeAction, TextLeaf, imageMeta } from '../core/types';
 import { STORAGE_KEY } from './constants';
 import { saveImageToIndexedDB } from './indexDB';
 
@@ -18,12 +18,12 @@ export const createDefaultNode = (meta_test?:boolean): EditorState =>{
   preferences: DEFAULT_PREFERENCES ,
   nodeMetadata: newnodeMetadata
   ,editorNodes:[
-  {
-  id: `${meta_test ? "meta_test" : ''}+${firstId}`,
-  tag: 'h1',
-  children: [],
-  placeHolder:'Tiltle',
-  },
+  // {
+  // id: `${meta_test ? "meta_test" : ''}+${firstId}`,
+  // tag: 'h1',
+  // children: [],
+  // placeHolder:'Tiltle',
+  // },
 ]})};
 
 export function loadInitialState(defaultValue?: EditorState, meta_test?: boolean): EditorState {
@@ -218,12 +218,9 @@ export const addNode = (type: EditorNodeTag, onapply: ((action: NodeAction) => v
         imageMeta: {...imageMeta, 
           mediaId: imageId, 
           src: imageMeta?.isUrl ? imageMeta.src : `imageId-${imageId}`}
-      });
-      // requestAnimationFrame(() => {
-      // const element= document.querySelector(`[data_node_id="${imageId}"]`) as HTMLElement;
-      // console.log("element",element)
-      // element.scrollIntoView({behavior: 'smooth', block: 'end'})
-      // })
+      });   
+    // scrollToNode(imageId);
+
     }
     else {
       onapply({
@@ -244,7 +241,8 @@ export const addNode = (type: EditorNodeTag, onapply: ((action: NodeAction) => v
         selection?.removeAllRanges();
         selection?.addRange(range);
       }
-    })
+    });
+    
   }; 
 
   // ✅ Async logic outside reducer
@@ -286,11 +284,10 @@ export const saveToLocal = (newState: EditorState) => {
 
 
 export const handleSaveAsJSON = (nodes: EditorState) => {
-  // metadata gets created
   const { 
     // titleNode,
     slug_h1,
-    meta_title, // customize site name
+    meta_title, 
     meta_description,
     keywords
   } = generateSeoMetaFromNodes(nodes);
@@ -298,15 +295,63 @@ export const handleSaveAsJSON = (nodes: EditorState) => {
   const articleData = {
     version: '1.0',
     exportedAt: new Date().toISOString(),
-    editorNodes: nodes.editorNodes,  // Your editor nodes
+    editorNodes: nodes.editorNodes, 
     metadata: {
       slug_h1,
       meta_title, 
       meta_description,
       meta_keywords: [...keywords],
     },
-    nodeMetadata: nodes.nodeMetadata,    // Optional: metadata
+    nodeMetadata: nodes.nodeMetadata, 
     preferences: nodes.preferences,
   };
   downloadJSON(articleData, `article-${Date.now()}.json`);
 };
+
+export const getImageDimensions = (file: File): Promise<{ width: number; height: number }> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        resolve({
+          width: img.width,
+          height: img.height,
+        });
+      };
+      img.onerror = () => {
+        reject(new Error('Failed to load image'));
+      };
+      img.src = e.target?.result as string;
+    };
+    
+    reader.onerror = () => {
+      reject(new Error('Failed to read file'));
+    };
+    
+    reader.readAsDataURL(file);
+  });
+};
+
+export const scrollToNode = (nodeId: string,retries = 0) => {
+  const element = document.querySelector(`[data_node_id="image-${nodeId}"]`);
+  console.log("element",element)
+  if (element) {
+    element.scrollIntoView({
+      behavior: 'smooth',
+      block: 'end', 
+    });
+    return;
+  }
+  
+  if (retries < 10) {
+    setTimeout(() => scrollToNode(nodeId, retries + 1), 50);
+  }
+};
+
+// export const getInsertionPoint = (nodeId: string,type: EditorNodeTag)=> {
+//   // check above el 
+//   const element = document.querySelector(`[data_node_id="${type === "image" ? "image-":''}${nodeId}"]`);
+//   const rect = element?.getBoundingClientRect();
+// }

@@ -1,10 +1,10 @@
 'use client';
-import React, { useLayoutEffect, useRef, useState } from 'react';
+import React, {  useLayoutEffect, useRef, useState } from 'react';
 import { useCallback, useEffect } from 'react';
-import { blurUpdate } from '@/app/modules/components/editor/utils/utils';
+import { blurUpdate, } from '@/app/modules/components/editor/utils/utils';
 import './MyText.css';
 import useControllableEditorNodes from '../hooks/useControllableEditorNodes';
-import { ActiveMarks, EditorNodeTag, MyTextEditorProps, toolbarState_Prop } from '../core/types';
+import { ActiveMarks, MyTextEditorProps, toolbarState_Prop, onDeleteProp, } from '../core/types';
 import { ContentNode } from '../ContentNode';
 import { FormatToolbar } from './FormatToolbar';
 import { LinkInput } from './LinkInput';
@@ -16,6 +16,7 @@ import { ListContainer } from './ListContainer';
 import { FabContainer } from '../FabContainer';
 
 export const MyTextEditor = (props: MyTextEditorProps) => {
+
   const {onNotification} = props;
 
   const { state, apply } = useControllableEditorNodes(
@@ -24,6 +25,7 @@ export const MyTextEditor = (props: MyTextEditorProps) => {
     props.onChange,
     props.meta_test
   );
+
   const [toolbarState, setToolbarState] = useState<toolbarState_Prop>({
     show: false,
     showLinkInput: false,
@@ -44,12 +46,27 @@ export const MyTextEditor = (props: MyTextEditorProps) => {
   const focusHistoryRef = useRef<string[]>([]);
   const previousLengthRef = useRef(state.editorNodes.length);
   const processedRef = useRef<Set<string>>(new Set());
-
   const notificationRef = useRef(onNotification);
+  const [direction, setDirection] = useState<'ltr' | 'rtl'>(state.preferences.languageDirection);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const isDeletingRef = useRef(false);
 
-useEffect(() => {
-  notificationRef.current = onNotification; // Always updates
-}, [onNotification]);
+  
+  useEffect(() => {
+    const clearNode = () => {
+     apply({
+       type: "CLEAR_STATE"
+     })
+      // console.log("voidddddddd")
+  }
+    if(props.onClearReady) {
+      props.onClearReady(clearNode)
+    }
+  },[props, apply])
+
+  useEffect(() => {
+    notificationRef.current = onNotification; // Always updates
+  }, [onNotification]);
 
   useLayoutEffect(() => {
     const sel = selectionRef.current;
@@ -207,7 +224,7 @@ useEffect(() => {
       link.target = "_blank";
       link.rel = "noopener noreferrer";
       
-      savedSelection?.surroundContents(link);
+      if(link) savedSelection?.surroundContents(link);
       const nodeElement = document.querySelector(`[data_node_id="${toolbarState.context.nodeId}"]`);
       if(nodeElement)
       savedSelection?.collapse();
@@ -307,25 +324,32 @@ useEffect(() => {
     };
   }, [state.editorNodes]);
   
+  
+  
   //  Deleting. 
-   const DeleteNode = useCallback((nodeId: string, nodeParentId?: string, tagType?: EditorNodeTag, mediaId?: string) => {
+  //  const DeleteNode = useCallback((nodeId: string, nodeParentId?: string, tagType?: EditorNodeTag, mediaId?: string) => {
+   const DeleteNode = useCallback((onDeleteProp: onDeleteProp) => {
      if(state.editorNodes.length <= 1){
         notificationRef.current?.({show: true, message: "Can not delete the only node"});
       return;
       }
-      apply({
+      if(isDeletingRef.current) return;
+      isDeletingRef.current = true;
+     apply({
         type: 'DELETE_NODE',
-        tagType:  tagType,       
-        nodeId: nodeId,
-        parentId: nodeParentId,
-        mediaId: mediaId
+        tagType: onDeleteProp.nodeTag,       
+        nodeId: onDeleteProp.nodeId,
+        parentId: onDeleteProp.nodeParentId,
+        mediaId: onDeleteProp.mediaId
       });
+      setTimeout(() => {
+        isDeletingRef.current = false;
+      }, 300);
     },[state.editorNodes.length ,apply]);
 
+     
 
-    const [direction, setDirection] = useState<'ltr' | 'rtl'>(state.preferences.languageDirection);
-      const [isAnimating, setIsAnimating] = useState(false);
-     const handleDirectionToggle = () => {
+    const handleDirectionToggle = () => {
     const newDirection = direction === 'ltr' ? 'rtl' : 'ltr';
     settypeDirection(newDirection);
     apply({
@@ -335,7 +359,7 @@ useEffect(() => {
     const firstNode = state?.editorNodes?.[0];
     const element = document.querySelector(`[data_node_id="${firstNode?.id}"]`);
     
-    (element as HTMLElement).focus();
+    if(element)(element as HTMLElement).focus();
      if (isAnimating) return;
         setIsAnimating(true);
         
@@ -439,5 +463,7 @@ useEffect(() => {
     </>
   );
 };
+// MyTextEditor.displayName = 'MyTextEditor';
+
 
 // export default MyTextEditor;

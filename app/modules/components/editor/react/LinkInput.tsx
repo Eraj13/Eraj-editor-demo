@@ -41,7 +41,7 @@ export  const LinkInput = ({
         onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
         placeholder="Enter URL"
       />
-      <button className="link-input_button" onClick={handleSubmit}>Apply</button>
+      <button className="link-input_button_add" onClick={handleSubmit}>Apply</button>
       <button className="link-input_button link-input_button_cross" onClick={onCancel}>×</button>
     </div>
   );

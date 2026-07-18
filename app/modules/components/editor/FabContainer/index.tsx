@@ -2,7 +2,7 @@
 import React, { useMemo, useRef, useState,  } from 'react';
 import './styles.css';
 import { fabContainerProps, EditorNodeTag, MediaItem  } from '../core/types';
-import { addNode,  slugifyFilename } from '../utils/utils';
+import { addNode,  getImageDimensions, slugifyFilename } from '../utils/utils';
 import { BulletListIcon, ColumnListIcon, RowListIcon } from '../utils/constants';
 import { ImageUrlInput } from '../react/ImageUrlInput';
 
@@ -13,19 +13,23 @@ export const FabContainer = ({mode ,onisOpen, onsetIsOpen, onapply,onActiveNode,
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showUrlInput, setShowUrlInput] = useState(false);
   // ✅ useMemo — computes value during render, no extra re-render
-const visibilities = useMemo(() => {
-  if (onNodeId === onActiveNode && !newnode) return "visible";
-  if (newnode) return "visible";
-  return "hidden";
-}, [newnode, onNodeId, onActiveNode]);
+  const visibilities = useMemo(() => {
+    if (onNodeId === onActiveNode && !newnode) return "visible";
+    if (newnode) return "visible";
+    return "hidden";
+  }, [newnode, onNodeId, onActiveNode]);
+  const isAddingRef = useRef(false);
+  
 
   const handleImageClick = () => {
     fileInputRef.current?.click();
   };
   
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    const dimensions = await getImageDimensions(file);
+
     const reader = new FileReader();
     reader.onload = async (event) => {
       if (event.target?.result) {
@@ -35,6 +39,8 @@ const visibilities = useMemo(() => {
         uploaded: false,
         type: file.type,
         size: file.size,
+        height: dimensions.height,
+        width: dimensions.width
       };  
       
       const imageMeta = {
@@ -51,7 +57,7 @@ const visibilities = useMemo(() => {
     onsetIsOpen(false);
   };
   
-   const handleUrlInsert = (url: string, filename: string) => {
+   const handleUrlInsert = async (url: string, filename: string) => {
     // ✅ Create image node from URL (not Base64!)
     const mediaItem: MediaItem = {
         filename: filename,
@@ -64,18 +70,28 @@ const visibilities = useMemo(() => {
         mediaItem, 
       }
       addNode("image", onapply, onNodeId, undefined, imageMeta,)
-      onsetIsOpen(false);  
+      onsetIsOpen(false); 
+    // const dimensions = await getImageDimensions(file);
+      // increaseHeight("image",dimensions);
+
   };
 
   const addNewNode = function (type: EditorNodeTag, listDirection?: "column" | "row" ) {
+    if(isAddingRef.current) return;
+    isAddingRef.current = true; 
     addNode(type, onapply, onNodeId, listDirection);
     onsetIsOpen(false);  
+    // increaseHeight("p"); 
+    setTimeout(() => {
+        isAddingRef.current = false;
+      }, 300); 
   }
   
   function closeAll() {
     setShowUrlInput(false);
     onsetIsOpen(false);  
   }
+
 
   return (
     <>

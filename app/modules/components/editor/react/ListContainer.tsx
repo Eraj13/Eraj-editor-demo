@@ -44,8 +44,7 @@ export const ListContainer: React.FC<ListContainerProps> = ({
             + Add item
           </button>
         </div>
-      )} */}
-      
+      )} */}     
       {/* The list itself */}
       <ul className='list-container'
       style={{direction: onPreferences?.languageDirection,
@@ -58,10 +57,8 @@ export const ListContainer: React.FC<ListContainerProps> = ({
           style={{direction: onPreferences?.languageDirection,
             // width: { listNode.listDirection === "row"} ? "15rem" : "inherirt"
           }}
-
           // className={`list-item-row ${onPreferences?.languageDirection === 'rtl' ? "reverse" : ""}`}
-          >
-            
+          >           
             {/* <span className="list-marker">
             {/* List marker (bullet/number) 
               {listNode.tag === 'ol' ? `${index + 1}.` : '•'}
@@ -78,23 +75,20 @@ export const ListContainer: React.FC<ListContainerProps> = ({
                 onDelete={onDelete}
               />
             </div>
-
-            <div className='div-buttons'>
-                
+            <div className='div-buttons'>               
               <button
                 className="list-item-add"
                 onClick={() => addListItem(item.id)}
                 title="Add item here"
                 >
                   <span>
-
                 +
                   </span>
               </button>
               <DeleteButton nodeTag={"li"}
                 visibility={true} 
                 lngD={onPreferences?.languageDirection}
-                onClick={() => onDelete(item.id,item.parentId, item.tag)} />
+                onClick={() => onDelete({nodeId:item.id, nodeParentId:item.parentId, nodeTag: item.tag})} />
               </div>        
           </li>
         ))}

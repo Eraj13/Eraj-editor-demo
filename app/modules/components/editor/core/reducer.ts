@@ -1,7 +1,7 @@
 import { EditorNode, EditorState, NodeAction, } from "../core/types";
 import applyFormatToLeaves from "../utils/applyFormatToLeaves";
 import { deleteImageFromIndexedDB, updateImageInIndexedDB } from "../utils/indexDB";
-import { generateId, placeHolder_re, saveToLocal } from "../utils/utils";
+import { createDefaultNode, generateId, placeHolder_re, saveToLocal, scrollToNode } from "../utils/utils";
 
 export function editorNodeReducer(
   state: EditorState,
@@ -18,8 +18,10 @@ export function editorNodeReducer(
         children: [],
         placeHolder: placeHolder_re(action.tagType, state.preferences.languageDirection),
         imageMeta: action.imageMeta,
-      };
-
+      };        
+        // console.log("imageId", newNode.id)
+      scrollToNode(newNode.id);
+      
       const nodeIndex = state.editorNodes.findIndex(node => node.id === action.nodeId);
 
       const newState = {...state, editorNodes: state.editorNodes.toSpliced(nodeIndex + 1, 0, newNode),
@@ -222,7 +224,12 @@ export function editorNodeReducer(
         )
       };
     }
-    break
+
+    case "CLEAR_STATE": {
+
+      return createDefaultNode();
+    }
+    
     default:
        return state
   }

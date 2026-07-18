@@ -1,7 +1,7 @@
 'use client';
-import { EditorNode, EditorState } from "@/app/modules/components/editor/core/types";
+import {  EditorNode, EditorState,} from "@/app/modules/components/editor/core/types";
 import { createDefaultNode, emptyState, generateSeoMetaFromNodes, handleSaveAsJSON, viewJSON } from "@/app/modules/components/editor/utils/utils";
-import { useEffect, useState, } from "react";
+import { useEffect, useRef, useState, } from "react";
 import './RichTextEditor.css';
 import { SaveNotification } from "@/app/modules/components/editor/react/saveNotification";
 import { RichTextEditorProps } from "./types";
@@ -19,6 +19,16 @@ const MyTextEditor = dynamic(
     ),
   }
 );
+// const MyTextEditor = dynamic<MyTextEditorProps & { ref?: React.Ref<EditorHandle> }>(
+//   () => import('../editor/react/Mytext').then((mod) => mod.MyTextEditor),
+//   {
+//     ssr: false,
+//     loading: () => <div>Loading editor...</div>,
+//   }
+// ) as React.ForwardRefExoticComponent<
+//   MyTextEditorProps & React.RefAttributes<EditorHandle>
+// >;
+
 
 export const RichTextEditor: React.FC<RichTextEditorProps> = ({
   onPublish,
@@ -30,6 +40,9 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
   const [metadata_, setMetadata] = useState<EditorState>(emptyState);
   const [isModalOpen, setisModalOpen] = useState(false);
   const [showSaveNotification, setNotification] = useState<({show: boolean, message?: string})>({show: false, message: "saved"});
+  const [showButtons, setShowButtons] = useState(false);
+  const clearNodeRef = useRef<() => void | undefined>(undefined);
+
   const metaComputing = ()=> {
     const { 
       titleNode,
@@ -58,9 +71,8 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
       nodeMetadata: nodes.nodeMetadata || new Map(),
     });      
   }
-  const [showButtons, setShowButtons] = useState(false);
 
-    useEffect(() => {
+  useEffect(() => {
     // ✅ Delay button rendering by 300ms
     const timer = setTimeout(() => {
       setShowButtons(true);
@@ -78,12 +90,14 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
     setNodes(createDefaultNode());
     setNotification({show: true,message: "Transfered properly."});
     setIsLoading(false);
+    if(clearNodeRef.current){
+      clearNodeRef.current()
+    }
   }
-
   return (
     <div className={"eraj-editor"}>
-      <h1 className={"eraj-editor_h1"}>Creating a new Article</h1>     
-       <MyTextEditor mode="article" onChange={setNodes} key="article" meta_test={false} isModalOpen={isModalOpen} onNotification={setNotification} />
+      <h1 className={"eraj-editor_h1"}>Writting a new Article</h1>     
+       <MyTextEditor mode="article" onChange={setNodes} key="article" meta_test={false} isModalOpen={isModalOpen} onNotification={setNotification} onClearReady={(fn) => {clearNodeRef.current = fn}} />
       {isModalOpen && meta_data && (
       <div className="modal">
         <MyTextEditor value={metadata_} mode="meta_test" onChange={setMetadata} key="meta_test" meta_test={true}  />

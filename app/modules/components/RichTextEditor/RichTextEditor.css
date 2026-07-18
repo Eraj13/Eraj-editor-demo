@@ -22,10 +22,7 @@
 
 .editor-controls {
   display: flex;
-  /* gap: 10px; */
-  /* align-items: center; */
-  /* justify-content: flex-end; */
-  margin-top: 10px;
+  margin-top: 125px;
   justify-content: space-between; 
 }
 @keyframes glowPulse {
@@ -40,10 +37,10 @@
 
 .modal{
   position: absolute;
-  top: 4rem;
+  top: 40%;
   left: 25%;
   z-index: 5;
-  max-width: 70rem;
+  max-width: 40rem;
   background-color: rgb(214, 241, 203);
   padding: 5px 10px 3px 10px ;
   border-radius: 10px;
@@ -61,6 +58,8 @@
   padding: .5px;
   border-radius: 10px;
   cursor: pointer;
+  border: none;
+  padding: 5px;
 }
 .button_meta_conf:hover{
   color: greenyellow;
@@ -164,12 +163,10 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
-}
-
-.publish-button {
-  background: #2563eb;
+    background: #2563eb;
   color: white;
 }
+
 
 .publish-button:hover:not(:disabled) {
   background: #1d4ed8;
@@ -185,7 +182,7 @@
   padding-left: 25px;
 }
 
-.publish-button {
+/* .publish-button {
   padding: 8px 16px;
   border: none;
   border-radius: 4px;
@@ -195,7 +192,7 @@
 .publish-button {
   background: #007bff;
   color: white;
-}
+} */
 
 
 .loading-spinner span{

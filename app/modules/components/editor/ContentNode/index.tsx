@@ -77,11 +77,13 @@ export const ContentNode = React.memo(function ContentNode({
     suppressContentEditableWarning: true,
     tabIndex: -1,
     'data-placeholder':  node.placeHolder,
-    className: `content-node ${node.tag}`,
+    className: `content-node ${node.tag} ${onMeta_test ? "onMeta_test" : ''}`,
     data_node_id: node.id,
-    style: {padding: (node.tag ==="p" && onMeta_test) ? "0 5px" : "0"}
+    // style: {padding: (node.tag ==="p" && onMeta_test) ? "0 5px" : "0"}
   };
-   
+  const imageProps = {
+    data_node_id: `image-${node.id}`
+  } 
   const handleImageClick = () => {
     const input = document.createElement('input');
     input.type = 'file';
@@ -130,7 +132,7 @@ export const ContentNode = React.memo(function ContentNode({
     if(e.key === "Backspace") {
       const targrt = nodeRef.current
       if(targrt && targrt?.textContent.length < 1){
-        onDelete(node.id, node.parentId);
+        onDelete({nodeId: node.id, nodeParentId: node.parentId});
       }
 // e: React.FocusEvent<HTMLElement>
     }
@@ -186,9 +188,7 @@ export const ContentNode = React.memo(function ContentNode({
 
   // SAVE BEFORE UNLOAD
   useEffect(() => {
-
     if(onMeta_test) return;
-
     const saveDraft = () => {
       // console.log()
     if (!nodeRef.current) return;
@@ -285,7 +285,7 @@ export const ContentNode = React.memo(function ContentNode({
           onClick={handleImageClick}>
         🖼️ Change</div>
           <img src={imageSrc || PLACEHOLDER_IMAGE} alt={node.imageMeta?.alt || "Picture"} 
-           className='image'
+           className='image' {...imageProps}
           >
           </img>
           {!onMeta_test && 
@@ -293,7 +293,7 @@ export const ContentNode = React.memo(function ContentNode({
           ref={nodeRef as React.RefObject<HTMLImageElement>}
           {...baseEditableProps} 
           className="image-caption"
-          style={{direction: onPreferences?.languageDirection}}
+          style={{direction: onPreferences?.languageDirection}}         
           >
           {/* {renderChildren(node.imageMeta.alt)} figcap automatickly reads text inside it from the page*/}
           </figcaption>}
@@ -341,7 +341,7 @@ export const ContentNode = React.memo(function ContentNode({
         nodeTag={node.tag}
         visibility={activeNode === node.id} 
         lngD={onPreferences?.languageDirection}
-        onClick={()=> onDelete(node.id, node.parentId, node.tag, node.imageMeta?.mediaId)}
+        onClick={()=> onDelete({nodeId: node.id, nodeParentId: node.parentId, nodeTag: node.tag, mediaId: node.imageMeta?.mediaId, imageHeight: node.imageMeta?.mediaItem?.height})}
         />
        }
     </div>
