@@ -19,7 +19,7 @@ import type { NextConfig } from "next";
 
 // next.config.js
 /** @type {import('next').NextConfig} */
-const nextConfig = {
+const nextConfig: NextConfig = {
   output: 'export',
   images: {
     unoptimized: true,
@@ -27,7 +27,7 @@ const nextConfig = {
   trailingSlash: true,
   distDir: 'out', // Optional: ensure output is in 'out'
   reactStrictMode: true,
-  swcMinify: true,
+  // swcMinify: true,
 };
 
 module.exports = nextConfig;
