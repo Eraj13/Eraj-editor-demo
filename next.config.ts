@@ -6,13 +6,28 @@ import type { NextConfig } from "next";
 
 // export default nextConfig;
 // next.config.js
+// /** @type {import('next').NextConfig} */
+// const nextConfig: NextConfig = {
+//   output: 'export', // ✅ Force static export
+//   images: {
+//     unoptimized: true, // ✅ Required for static export
+//   },
+//   trailingSlash: true,
+// };
+
+// module.exports = nextConfig;
+
+// next.config.js
 /** @type {import('next').NextConfig} */
-const nextConfig: NextConfig = {
-  output: 'export', // ✅ Force static export
+const nextConfig = {
+  output: 'export',
   images: {
-    unoptimized: true, // ✅ Required for static export
+    unoptimized: true,
   },
   trailingSlash: true,
+  distDir: 'out', // Optional: ensure output is in 'out'
+  reactStrictMode: true,
+  swcMinify: true,
 };
 
 module.exports = nextConfig;
